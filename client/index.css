@@ -1,0 +1,22 @@
+@import url("https://fonts.googleapis.com/css2?family=Odibee+Sans&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Odibee+Sans&display=swap');
+
+*{
+    padding: 0;
+    box-sizing: border-box;
+    margin: 0;
+}
+:root {
+    --fondo-verde: #4a950d99;
+    --fondo-rojo: #840505b8;
+    --fondo-gris: hsla(92, 6%, 43%, 0.6);
+    --fondo-azul:#006CFC;
+  }
+.root {
+    background: url("./images/fondo.png");
+}
+@media (min-width: 960px) {
+    .root {
+      background: url("./images/fondo-desktop.png");
+    }
+}
