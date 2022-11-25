@@ -6,8 +6,9 @@
     "build:front": "parcel build ./client/index.html --dist-dir public",
     "build:api": "tsc",
     "build": "yarn install --ignore-engines && yarn build:front && yarn build:api",
-    "start": "node ./server/index.js"
+    "start": "node ../server/index.js"
   },
+  
   "dependencies": {
     "@types/cors": "^2.8.12",
     "cors": "^2.8.5",
