@@ -11,7 +11,10 @@ export const WelcomePage=(params)=>{
     
     div.innerHTML = `
     <custom-title></custom-title>
-    <custom-button class="btnEl">Empezar</custom-button>
+    <div class="buttons">
+    <custom-button class="btnEl">Nuevo Juego</custom-button>
+    <custom-button class="btnEl">Ingresar a una sala</custom-button>
+    </div>
     <div class="hands">
         <hand-piedra></hand-piedra>
         <hand-tijeras></hand-tijeras>
@@ -27,6 +30,14 @@ export const WelcomePage=(params)=>{
         height: 100vh;
         padding: 85px 0 0 0;
         overflow:hidden;
+    }
+    .buttons{
+        width:100%;
+        height: 16vh;
+        display:flex;
+        flex-direction:column;
+        align-items: center;
+        justify-content: space-between;
     }
     .hands{
         width:80%;

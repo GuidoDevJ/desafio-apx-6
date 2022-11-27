@@ -1,9 +1,14 @@
 import { WelcomePage } from './pages/welcome';
+import { NewRoom } from './pages/newRoom';
 import { Intructions } from './pages/intructions';
 import { Play } from './pages/play';
 import { Empate } from './pages/empate';
 import { Ganaste } from './pages/ganaste';
 import { Lose } from './pages/perdiste';
+import { EnterRoom } from './pages/enterRoom';
+import { Connect } from './pages/connect';
+import { Waiting } from './pages/waiting';
+import { Faild } from './pages/error';
 const BASE_PATH = "/desafio-m5";
 
 
@@ -36,6 +41,31 @@ const routes =[
     {
         path: /\/perdiste/,
         component: Lose,
+    
+    },
+    {
+        path: /\/newroom/,
+        component: NewRoom,
+    
+    },
+    {
+        path: /\/enterRoom/,
+        component: EnterRoom,
+    
+    },
+    {
+        path: /\/connect/,
+        component: Connect,
+    
+    },
+    {
+        path: /\/waiting/,
+        component: Waiting,
+    
+    },
+    {
+        path: /\/error/,
+        component: Faild,
     
     },
 ]
