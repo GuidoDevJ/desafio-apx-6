@@ -49,7 +49,7 @@ const routes =[
     
     },
     {
-        path: /\/enterRoom/,
+        path: /\/enterroom/,
         component: EnterRoom,
     
     },
@@ -67,7 +67,7 @@ const routes =[
         path: /\/error/,
         component: Faild,
     
-    },
+    }
 ]
 
 function isGithubPages() {

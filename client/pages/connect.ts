@@ -5,17 +5,18 @@ import"../components/piedra-hand/piedra"
 import"../components/tijeras-hand/tijeras"
 import"../components/custom-text/text"
 import "../components/header/header"
+import { state } from "../state"
 
 export const Connect=(params)=>{
+    const roomId = state.getState()
     const div = document.createElement("div")
     const style = document.createElement("style")
     div.classList.add("contenedor")
     
     div.innerHTML = `
-    <custom-header></custom-header>
     <div class="text">
         <h3>Compartí el código:</h3>
-        <h2>Codig12345</h2>
+        <h2>${roomId.roomId}</h2>
         <h3>Con tu contrincante</h3>
     </div>
     <div class="hands">

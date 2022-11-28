@@ -12,8 +12,8 @@ export const WelcomePage=(params)=>{
     div.innerHTML = `
     <custom-title></custom-title>
     <div class="buttons">
-    <custom-button class="btnEl">Nuevo Juego</custom-button>
-    <custom-button class="btnEl">Ingresar a una sala</custom-button>
+    <custom-button class="btnNewGame">Nuevo Juego</custom-button>
+    <custom-button class="btnEnterRoom">Ingresar a una sala</custom-button>
     </div>
     <div class="hands">
         <hand-piedra></hand-piedra>
@@ -47,9 +47,13 @@ export const WelcomePage=(params)=>{
         top:15px;
     }
     `
-    const btn = div.querySelector(".btnEl")
-    btn?.addEventListener("click",e=>{
-        params.goTo("/intructions")
+    const btnNewGame = div.querySelector(".btnNewGame") as HTMLElement
+    const btnEnterRoom = div.querySelector(".btnEnterRoom") as HTMLElement
+    btnNewGame.addEventListener("click",e=>{
+        params.goTo("/newroom")
+    })
+    btnEnterRoom.addEventListener("click",e=>{
+        params.goTo("/enterroom")
     })
     div.appendChild(style)
     return div

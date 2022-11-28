@@ -4,6 +4,7 @@ import"../components/presentacionTitle/presentacion"
 import"../components/papel-hand/hand"
 import"../components/piedra-hand/piedra"
 import"../components/tijeras-hand/tijeras"
+import { state } from "../state"
 
 export const NewRoom=(params)=>{
     const div = document.createElement("div")
@@ -14,7 +15,7 @@ export const NewRoom=(params)=>{
     <custom-title></custom-title>
     <div class="buttons">
     <h2>Tu Nombre</h2>
-    <custom-input></custom-input>
+    <input type="text" class="input"></input>
     <custom-button class="btnEl">Empezar</custom-button>
     </div>
     <div class="hands">
@@ -52,10 +53,23 @@ export const NewRoom=(params)=>{
         position:relative;
         top:15px;
     }
+    .input{
+        width:315px;
+        height:70px;
+        outline: 10px solid;
+        font-size:40px;
+        text-align:center;
+    }
     `
-    const btn = div.querySelector(".btnEl")
-    btn?.addEventListener("click",e=>{
-        params.goTo("/intructions")
+    const btn = div.querySelector(".btnEl") as HTMLElement
+    const input = div.querySelector(".input") as any
+    btn.addEventListener("click",e=>{
+        state.setNombre(input.value)
+        state.singIn(()=>{
+            state.askNewRoom(()=>{
+                params.goTo("/connect")
+            })
+        })
     })
     div.appendChild(style)
     return div

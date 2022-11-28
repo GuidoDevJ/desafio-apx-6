@@ -5,10 +5,11 @@ import"../components/piedra-hand/piedra"
 import"../components/tijeras-hand/tijeras"
 import"../components/custom-text/text"
 import "../components/header/header"
+import { state } from "../state"
 
 export const Waiting=(params)=>{
     // Crear un player que venga del state
-    // let player = 
+    let player = state.getState().nombre
     const div = document.createElement("div")
     const style = document.createElement("style")
     div.classList.add("contenedor")

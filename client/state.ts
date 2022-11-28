@@ -1,17 +1,22 @@
 type Jugada = "piedra" | "tijeras" | "papel"
 type Result = "empataste" | "ganaste" | "perdiste"
 
+const BASE_URL = process.env.URL || "http://localhost:3001/"
+
 const state ={
     data:{
-        currentMoves:{
-            myPlay:"",
-            computerPlay:"",
-        },
-        result:[],
-        historyScore: {
-            jugador: 0,
-            computadora: 0,
-        },
+        nombre:"",
+        userId:"",
+        roomId:""
+        // currentMoves:{
+        //     myPlay:"",
+        //     computerPlay:"",
+        // },
+        // result:[],
+        // historyScore: {
+        //     jugador: 0,
+        //     computadora: 0,
+        // },
     },
     listeners:[],
     init(){
@@ -83,7 +88,88 @@ const state ={
     deleteScore(){
     const deleData = {jugador:0,computadora:0}
     localStorage.setItem("save-score",JSON.stringify(deleData))
-    }
+    },
+    setNombre(name:string){
+        const cs = this.getState()
+        cs.nombre = name
+        console.log(cs)
+        this.setState(cs)
+    },
+    singIn(cb?){
+        const cs = this.getState()
+        if(cs.nombre){
+            fetch(BASE_URL+ "singup",{
+                    method:"post",
+                    body:JSON.stringify({
+                        nombre:this.data.nombre
+                    }),
+                    mode: 'cors',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*'
+                }
+                }).then(data=>{
+                    return data.json()
+                 }).then(data=>{
+                    cs.userId = data.id
+                    this.setState(cs)
+                    if(cb){
+                        cb()
+                    }
+                 })
+
+        }else{
+            console.error("No hay datos en el state")
+            cb()
+        }
+      
+    },
+    askNewRoom(cb?){
+        const cs = this.getState()
+
+        fetch(BASE_URL+ "rooms",{
+                method:"post",
+                body:JSON.stringify({
+                    userId:cs.userId
+                }),
+                mode: 'cors',
+            headers: {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+            }
+            }).then(data=>{
+                return data.json()
+             }).then(data=>{
+                cs.roomId = data.id
+                this.setState(cs)
+                console.log(cs)
+                if(cb){
+                    cb()
+                }
+             })
+    },
+    getData(){
+        const cs = this.getState()
+        fetch(BASE_URL+ "rooms/"+cs.roomId+"?"+new URLSearchParams({userId:cs.userId}))
+        .then(data=>{
+            return data.json()
+         }).then(data=>{
+            cs.rtdbId = data.rtdbRoomId
+            this.setState(cs)
+            this.listenRoom()
+         })
+    },
+    async sincronizarDatos (id){
+        console.log("Soy la sincronizacion",id)
+        const cs = this.getState()
+        cs.roomId = id
+        const data = await fetch(BASE_URL+"rooms/"+id)
+        let json = await data.json()
+        console.log(json)
+        cs.rtdbId = json.rtdbRoomId
+        console.log(cs)
+        this.setState(cs)
+    },
 }
 
 export {state}
