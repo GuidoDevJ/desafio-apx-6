@@ -65,10 +65,10 @@ export const EnterRoom=(params)=>{
     const name = div.querySelector(".name") as any
     const code = div.querySelector(".code") as any
     btn?.addEventListener("click",e=>{
-        state.setOppentName(name.value)
+        state.setNombreOwn(name.value)
         state.singIn(()=>{
             state.sincronizarDatos(code.value,()=>{
-                state.joinToRoom()
+                state.joinToRoom(params.goTo("/intructions"))
             })
         })
     })

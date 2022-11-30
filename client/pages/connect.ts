@@ -4,7 +4,6 @@ import"../components/papel-hand/hand"
 import"../components/piedra-hand/piedra"
 import"../components/tijeras-hand/tijeras"
 import"../components/custom-text/text"
-import "../components/header/header"
 import { state } from "../state"
 
 export const Connect=(params)=>{
@@ -58,7 +57,9 @@ export const Connect=(params)=>{
         font-weight:700;
     }
     `
-    state.checkConnections()
+    state.checkConnections(()=>{
+        params.goTo("/intructions")
+    })
     div.appendChild(style)
     
     return div

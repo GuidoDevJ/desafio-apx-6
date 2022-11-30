@@ -1,16 +1,18 @@
+import { once } from "events"
 import{state} from"../state"
 
 export const Play=(parametro)=>{
+    console.log(state.getState())
     let counter = 3
-    const intervalo: any = setInterval(() => {
-    counter--;
-    const contadorEl = div.querySelector(".contador") as any
-    contadorEl.textContent = String(counter)
-    if (counter === 0) {
-      clearInterval(intervalo)
-      parametro.goTo("/intructions")
-    }
-    }, 1000)
+    // const intervalo: any = setInterval(() => {
+    // counter--;
+    // const contadorEl = div.querySelector(".contador") as any
+    // contadorEl.textContent = String(counter)
+    // if (counter === 0) {
+    //   clearInterval(intervalo)
+    //   parametro.goTo("/intructions")
+    // }
+    // }, 1000)
 
     const div = document.createElement("div")
     const style = document.createElement("style")
@@ -105,27 +107,44 @@ export const Play=(parametro)=>{
     const handsJugador = div.querySelector(".hands-jugador")
     const timerEle = div.querySelector(".contador")
     for(const img of images.children){
-        function removeListeners(e) {
-            // removemos el evento
-            e.target.removeEventListener(e.type, removeListeners);
+        // function removeListeners(e) {
+        //     // removemos el evento
+        //     e.target.removeEventListener(e.type, removeListeners);
+        //     const clase = img.getAttribute("class")
+        //     // clearInterval(intervalo)
+        //     if(clase === "papel-jugador"){
+        //         state.setMove("papel")
+        //         toWin("papel")
+
+        //     }else if(clase === "tijera-jugador"){
+        //         state.setMove("tijeras")
+        //         toWin("tijeras")
+
+
+
+        //     }else{
+        //         state.setMove("piedra")
+        //         toWin("piedra")
+        //     }
+        // }
+        img.addEventListener("click",(e)=>{
             const clase = img.getAttribute("class")
-            clearInterval(intervalo)
+            // clearInterval(intervalo)
             if(clase === "papel-jugador"){
-                state.moveGame("papel")
+                state.setMove("papel")
                 toWin("papel")
 
             }else if(clase === "tijera-jugador"){
-                state.moveGame("tijeras")
+                state.setMove("tijeras")
                 toWin("tijeras")
 
 
 
             }else{
-                state.moveGame("piedra")
+                state.setMove("piedra")
                 toWin("piedra")
             }
-            }
-        img.addEventListener("click",removeListeners)
+        },{once})
     }
     
     const toWin=(params)=>{

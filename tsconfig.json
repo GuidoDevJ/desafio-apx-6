@@ -4,7 +4,8 @@
         "target": "ESNext",
         "moduleResolution": "node",
         "resolveJsonModule": true,
-        "strictNullChecks": false
+        "strictNullChecks": false,
+    "allowSyntheticDefaultImports": true,
     },
     "files": [
         "./server/index.ts",

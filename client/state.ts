@@ -10,7 +10,7 @@ const state ={
         gameState: {
           currentPage: null,
           name: "mock",
-          play: null,
+          play: "",
           userId: "",
           online: false,
           ready: false,
@@ -106,11 +106,6 @@ const state ={
         console.log(cs)
         this.setState(cs)
     },
-    setOppentName(name:string){
-        const cs = this.getState()
-        cs.gameState.opponentName = name
-        this.setState(cs)
-    },
     singIn(cb?){
         const cs = this.getState()
         if(cs.gameState.name ){
@@ -128,6 +123,7 @@ const state ={
                     return data.json()
                  }).then(data=>{
                     cs.gameState.userId = data.id
+                    cs.gameState.online = true 
                     this.setState(cs)
                     if(cb){
                         cb()
@@ -207,7 +203,7 @@ const state ={
             cb()
         }
     },
-    async joinToRoom(){
+    async joinToRoom(cb?){
         const data = this.getState()
         const {gameState} = data
         gameState.owner = false
@@ -219,24 +215,25 @@ const state ={
               },
               body: JSON.stringify({ gameState }),
         })
-        this.checkConnections()
+        this.checkConnections(cb)
     },
-    checkConnections(){
+    checkConnections(cb?){
         const cs = this.getState()
         const ref = rtdb.ref(`rooms/${cs.gameState.privateId}`)
         // const rtdbRef = rtdb.ref(`rooms/tVUZ_A72dRBbhFc_56noY`);
         ref.on("value", (snapshot) => {
       let data = snapshot.val()
       if(Object.keys(data).length === 2){
-        this.setGameReadyStatus(true)
+        this.setGameReadyStatus(true,cb)
+        if(cs.gameState.name === data.owner.name){
+            cs.gameState.opponentName = data.guest.name
+        }
+        if(cs.gameState.name === data.guest.name){
+            cs.gameState.opponentName = data.owner.name
+        }
       }
-    //   let datos = Object.values(data) as any
-    //   let jugadores = datos.map((el:any)=> el.name)
-    //     if(jugadores.length > 2){
-    //         console.log("Espacio lleno")
-    //     }else{
-    //         console.log("Estoy atento")
-    //     }
+
+
     });
     },
      setGameReadyStatus(online: boolean,cb?) {
@@ -244,16 +241,51 @@ const state ={
     
         if (online === true) {
           data.gameReady = online;
-          console.log(data)
-        //   if (location.pathname !== "/waiting") return;
-        //   if (location.pathname === "/waiting") {
-        //     if(cb){
-        //         cb()
-        //     }
-        //   }
+          if (location.pathname !== "/connect") return;
+          if (location.pathname === "/connect") {
+            cb("/intructions")
+          }
         }
         if (online === false) return (data.gameReady = online);
       },
+      setReadyStatus(boolean:boolean){
+        const {gameState} = this.getState()
+        gameState.ready = boolean;
+        fetch(`${BASE_URL}rooms/${gameState.publicId}/play`, {
+        method: "post",
+        headers: {
+        "content-type": "application/json",
+        },
+        body: JSON.stringify({ gameState }),
+    });
+        
+      },
+      checkBothPlayersReady(cb?){
+        const cs = this.getState()
+        const refe = rtdb.ref(`/rooms/${cs.gameState.privateId}`)
+        refe.on("value",snapShot=>{
+            const data = snapShot.val()
+            if(data.owner.ready && data.guest.ready){
+                cs.playersReady = true;
+            if (location.pathname !== "/waiting") return;
+            if (location.pathname === "/waiting") {
+                cb()
+            }
+            }
+        })
+      },
+      setMove(playerMove:Jugada){
+        const {gameState} = this.getState()
+        gameState.play = playerMove
+        fetch(`${BASE_URL}rooms/${gameState.publicId}/play`,{
+            method: "post",
+        headers: {
+        "content-type": "application/json",
+        },
+        body: JSON.stringify({ gameState })
+        })
+         
+      }
 }
 
 export {state}

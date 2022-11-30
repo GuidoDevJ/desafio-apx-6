@@ -16,6 +16,7 @@ app.use(express.static("public"));
 
 const userCollection = firestore.collection("users")
 const roomsCollection = firestore.collection("rooms")
+
 // Base de Datos  
 
 app.post("/singup",(req,res)=>{
@@ -111,7 +112,40 @@ app.get("/rooms/:roomId",(req,res)=>{
 			});
 		}
 	});
+    
 })
+
+app.post("/rooms/:id/play",  (req, res) => {
+    const { gameState } = req.body;
+  
+  
+    // //checkeo si existe el usuario && la sala
+    // if (userSnapshot.exists === false)
+    //   return res.status(401).json({ message: "Access denied, log in required" });
+  
+    // if (userSnapshot.exists && roomSnapshot.exists === false)
+    //   return res.status(404).json({ message: "Room not found" });
+  
+    // if (userSnapshot.exists && roomSnapshot.exists) {
+      const roomRef = rtdb.ref(`rooms/${gameState.privateId}`);
+  
+
+      //updateo la data en la rtdb
+      if (gameState.owner) {
+         roomRef.update({
+          owner: gameState,
+        });
+        return res.json({ success: true });
+      } else if (gameState.owner == false) {
+         roomRef.update({
+          guest: gameState,
+        });
+        return res.json({ success: true });
+      }
+    // }
+  }
+  );
+
 // app.get("/rooms/:roomId",(req,res)=>{
 //     const {userId} = req.query
 //     const {roomId} = req.params

@@ -9,7 +9,7 @@ import { state } from "../state"
 
 export const Waiting=(params)=>{
     // Crear un player que venga del state
-    let player = state.getState().nombre
+    let cs = state.getState()
     const div = document.createElement("div")
     const style = document.createElement("style")
     div.classList.add("contenedor")
@@ -17,7 +17,7 @@ export const Waiting=(params)=>{
     div.innerHTML = `
     <custom-header></custom-header>
     <div class="text">
-        <p>Esperando a que Paula presione ¡Jugar!...</p>
+        <p>Esperando a que ${cs.gameState.opponentName} presione ¡Jugar!...</p>
     </div>
     <div class="hands">
         <hand-piedra></hand-piedra>
@@ -55,7 +55,10 @@ export const Waiting=(params)=>{
     }
    
     `
-    
+    state.checkBothPlayersReady(()=>{
+        params.goTo("/play")
+    })
+
     div.appendChild(style)
     
     return div
