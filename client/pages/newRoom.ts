@@ -64,7 +64,7 @@ export const NewRoom=(params)=>{
     const btn = div.querySelector(".btnEl") as HTMLElement
     const input = div.querySelector(".input") as any
     btn.addEventListener("click",e=>{
-        state.setNombre(input.value)
+        state.setNombreOwn(input.value)
         state.singIn(()=>{
             state.askNewRoom(()=>{
                 params.goTo("/connect")

@@ -1,22 +1,33 @@
+import { rtdb } from "./db"
+
 type Jugada = "piedra" | "tijeras" | "papel"
 type Result = "empataste" | "ganaste" | "perdiste"
 
 const BASE_URL = process.env.URL || "http://localhost:3001/"
 
 const state ={
-    data:{
-        nombre:"",
-        userId:"",
-        roomId:""
-        // currentMoves:{
-        //     myPlay:"",
-        //     computerPlay:"",
-        // },
-        // result:[],
-        // historyScore: {
-        //     jugador: 0,
-        //     computadora: 0,
-        // },
+    data: {
+        gameState: {
+          currentPage: null,
+          name: "mock",
+          play: null,
+          userId: "",
+          online: false,
+          ready: false,
+          owner: true,
+          publicId: "",
+          privateId: "",
+          opponentName: "",
+          opponentPlay: null,
+          lastGameOwnerResult: null,
+          lastGameGuestResult: null,
+        },
+        gameReady: false,
+        playersReady: false,
+        scoreboard: {
+          owner: 0,
+          guest: 0,
+        },
     },
     listeners:[],
     init(){
@@ -89,19 +100,24 @@ const state ={
     const deleData = {jugador:0,computadora:0}
     localStorage.setItem("save-score",JSON.stringify(deleData))
     },
-    setNombre(name:string){
+    setNombreOwn(name:string){
         const cs = this.getState()
-        cs.nombre = name
+        cs.gameState.name = name
         console.log(cs)
+        this.setState(cs)
+    },
+    setOppentName(name:string){
+        const cs = this.getState()
+        cs.gameState.opponentName = name
         this.setState(cs)
     },
     singIn(cb?){
         const cs = this.getState()
-        if(cs.nombre){
+        if(cs.gameState.name ){
             fetch(BASE_URL+ "singup",{
                     method:"post",
                     body:JSON.stringify({
-                        nombre:this.data.nombre
+                        nombre:this.data.gameState.name 
                     }),
                     mode: 'cors',
                 headers: {
@@ -111,7 +127,7 @@ const state ={
                 }).then(data=>{
                     return data.json()
                  }).then(data=>{
-                    cs.userId = data.id
+                    cs.gameState.userId = data.id
                     this.setState(cs)
                     if(cb){
                         cb()
@@ -124,33 +140,32 @@ const state ={
         }
       
     },
-    askNewRoom(cb?){
-        const cs = this.getState()
+    async askNewRoom(cb?){
+        const {gameState} = this.getState()
 
-        fetch(BASE_URL+ "rooms",{
+        const rawPublicRoomId = await fetch(BASE_URL+ "rooms",{
                 method:"post",
                 body:JSON.stringify({
-                    userId:cs.userId
+                    gameState
                 }),
                 mode: 'cors',
             headers: {
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Origin': '*'
             }
-            }).then(data=>{
-                return data.json()
-             }).then(data=>{
-                cs.roomId = data.id
-                this.setState(cs)
-                console.log(cs)
-                if(cb){
-                    cb()
-                }
-             })
+            })
+            const pId = await rawPublicRoomId.json()
+            const {id,idLarge} = await pId
+            this.data.gameState.publicId = id
+            this.data.gameState.privateId = idLarge
+            if(cb){
+                cb()
+            }
+            
     },
     getData(){
         const cs = this.getState()
-        fetch(BASE_URL+ "rooms/"+cs.roomId+"?"+new URLSearchParams({userId:cs.userId}))
+        fetch(BASE_URL+ "rooms/"+cs.gameState.publicId+"?"+new URLSearchParams({userId:cs.gameState.userId}))
         .then(data=>{
             return data.json()
          }).then(data=>{
@@ -159,17 +174,86 @@ const state ={
             this.listenRoom()
          })
     },
-    async sincronizarDatos (id){
-        console.log("Soy la sincronizacion",id)
+    connectarStateToRtdb(cb){
         const cs = this.getState()
-        cs.roomId = id
-        const data = await fetch(BASE_URL+"rooms/"+id)
+        console.log(cs.gameState)
+        let rtdbkey = cs.gameState.privateId
+        fetch(BASE_URL+`rooms/${rtdbkey}`,{
+            method:"Post",
+            body: JSON.stringify(cs.gameState),
+            mode: 'cors',
+            headers: {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+            }
+        },)
+        .then(()=>{
+            if(cb){
+                cb()
+            }
+        })
+    },
+    async sincronizarDatos (id,cb?){
+        const cs = this.getState()
+        cs.gameState.publicId = id
+        cs.gameState.owner = false
+        cs.gameState.online = true
+        const data = await fetch(BASE_URL+`rooms/${id}`)
         let json = await data.json()
         console.log(json)
-        cs.rtdbId = json.rtdbRoomId
-        console.log(cs)
+        cs.gameState.privateId = json.rtdbRoomId
         this.setState(cs)
+        if(cb){
+            cb()
+        }
     },
+    async joinToRoom(){
+        const data = this.getState()
+        const {gameState} = data
+        gameState.owner = false
+        data.gameReady = true
+        fetch(BASE_URL+`rooms/${gameState.privateId}`,{
+            method:"Post",
+            headers: {
+                "content-type": "application/json",
+              },
+              body: JSON.stringify({ gameState }),
+        })
+        this.checkConnections()
+    },
+    checkConnections(){
+        const cs = this.getState()
+        const ref = rtdb.ref(`rooms/${cs.gameState.privateId}`)
+        // const rtdbRef = rtdb.ref(`rooms/tVUZ_A72dRBbhFc_56noY`);
+        ref.on("value", (snapshot) => {
+      let data = snapshot.val()
+      if(Object.keys(data).length === 2){
+        this.setGameReadyStatus(true)
+      }
+    //   let datos = Object.values(data) as any
+    //   let jugadores = datos.map((el:any)=> el.name)
+    //     if(jugadores.length > 2){
+    //         console.log("Espacio lleno")
+    //     }else{
+    //         console.log("Estoy atento")
+    //     }
+    });
+    },
+     setGameReadyStatus(online: boolean,cb?) {
+        let data =  this.getState();
+    
+        if (online === true) {
+          data.gameReady = online;
+          console.log(data)
+        //   if (location.pathname !== "/waiting") return;
+        //   if (location.pathname === "/waiting") {
+        //     if(cb){
+        //         cb()
+        //     }
+        //   }
+        }
+        if (online === false) return (data.gameReady = online);
+      },
 }
 
 export {state}

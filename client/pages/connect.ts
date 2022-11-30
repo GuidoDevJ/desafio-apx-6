@@ -8,7 +8,7 @@ import "../components/header/header"
 import { state } from "../state"
 
 export const Connect=(params)=>{
-    const roomId = state.getState()
+    const cs = state.getState()
     const div = document.createElement("div")
     const style = document.createElement("style")
     div.classList.add("contenedor")
@@ -16,7 +16,7 @@ export const Connect=(params)=>{
     div.innerHTML = `
     <div class="text">
         <h3>Compartí el código:</h3>
-        <h2>${roomId.roomId}</h2>
+        <h2>${cs.gameState.publicId}</h2>
         <h3>Con tu contrincante</h3>
     </div>
     <div class="hands">
@@ -58,7 +58,7 @@ export const Connect=(params)=>{
         font-weight:700;
     }
     `
-    
+    state.checkConnections()
     div.appendChild(style)
     
     return div

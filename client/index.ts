@@ -3,7 +3,7 @@ import { initRouter } from './router';
 (()=>{
     let root = document.querySelector(".root") as HTMLElement
 
-    state.init()
+    // state.init()
     initRouter(root)
 
 })()

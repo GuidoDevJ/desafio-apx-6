@@ -54,13 +54,12 @@ app.post("/auth",(req,res)=>{
 })
 
 app.post("/rooms",(req,res)=>{
-    const {userId} = req.body
-    userCollection.doc(userId.toString()).get().then(snap=>{
+    const {gameState} = req.body
+    userCollection.doc(gameState.userId.toString()).get().then(snap=>{
         if(snap.exists){
             let newRoom = rtdb.ref("/rooms/" + nanoid())
             newRoom.set({
-               messages:[],
-               owner:userId 
+               owner:gameState 
             }).then(()=>{
                 const roomLongId = newRoom.key
                 const roomId = 1000+ Math.floor(Math.random() * 999)
@@ -68,7 +67,8 @@ app.post("/rooms",(req,res)=>{
                     rtdbRoomId:roomLongId
                 }).then(()=>{
                     res.json({
-                        id:roomId.toString()
+                        id:roomId.toString(),
+                        idLarge:roomLongId
                     })
 
                 })
@@ -90,21 +90,28 @@ app.post("/rooms",(req,res)=>{
 //         res.json("Salio todo ok")
 //     })
 // })
-// app.get("/rooms/:roomId",(req,res)=>{
-//     const chatRoomId = req.params.roomId;
-// 	const chatRoomDoc = roomsCollection.doc(`${chatRoomId.toString()}`);
-// 	chatRoomDoc.get().then((docSnap) => {
-// 		if (docSnap.exists) {
-// 			const snapData = docSnap.data();
-// 			res.status(200).json(snapData);
-// 		} else {
-// 			res.status(404).json({
-// 				message:
-// 					"ID de sala incorrecto. Compruebe que el ID se ingresó correctamente de lo contrario cree una sala",
-// 			});
-// 		}
-// 	});
-// })
+app.post("/rooms/:rtdbId",(req,res)=>{
+    const {rtdbId} = req.params
+    const {gameState} = req.body
+    rtdb.ref("/rooms/"+rtdbId).update({guest:gameState}).then(()=>{
+        res.json("Salio todo ok")
+    })
+})
+app.get("/rooms/:roomId",(req,res)=>{
+    const chatRoomId = req.params.roomId;
+	const chatRoomDoc = roomsCollection.doc(`${chatRoomId.toString()}`);
+	chatRoomDoc.get().then((docSnap) => {
+		if (docSnap.exists) {
+			const snapData = docSnap.data();
+			res.status(200).json(snapData);
+		} else {
+			res.status(404).json({
+				message:
+					"ID de sala incorrecto. Compruebe que el ID se ingresó correctamente de lo contrario cree una sala",
+			});
+		}
+	});
+})
 // app.get("/rooms/:roomId",(req,res)=>{
 //     const {userId} = req.query
 //     const {roomId} = req.params

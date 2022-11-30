@@ -4,6 +4,7 @@ import"../components/presentacionTitle/presentacion"
 import"../components/papel-hand/hand"
 import"../components/piedra-hand/piedra"
 import"../components/tijeras-hand/tijeras"
+import { state } from "../state"
 
 export const EnterRoom=(params)=>{
     const div = document.createElement("div")
@@ -13,7 +14,8 @@ export const EnterRoom=(params)=>{
     div.innerHTML = `
     <custom-title></custom-title>
     <div class="buttons">
-    <custom-input placeHolder="Codigo"></custom-input>
+    <input placeholder="Nombre" class="input name"/>
+    <input placeholder="Codigo" class="input code"/>
     <custom-button class="btnEl">Ingresar a la sala</custom-button>
     </div>
     <div class="hands">
@@ -51,10 +53,24 @@ export const EnterRoom=(params)=>{
         position:relative;
         top:15px;
     }
+    .input{
+        width:315px;
+        height:70px;
+        outline: 10px solid;
+        font-size:40px;
+        text-align:center;
+    }
     `
     const btn = div.querySelector(".btnEl")
+    const name = div.querySelector(".name") as any
+    const code = div.querySelector(".code") as any
     btn?.addEventListener("click",e=>{
-        params.goTo("/intructions")
+        state.setOppentName(name.value)
+        state.singIn(()=>{
+            state.sincronizarDatos(code.value,()=>{
+                state.joinToRoom()
+            })
+        })
     })
     div.appendChild(style)
     return div

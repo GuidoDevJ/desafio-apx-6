@@ -1,10 +1,11 @@
+import * as key from "../server/key.json"
 import * as admin from "firebase-admin"
 import firebase from 'firebase/compat/app';
 import "firebase/compat/database"
 
 
 admin.initializeApp({
-    credential: admin.credential.cert("./key.json"),
+    credential: admin.credential.cert(key as any),
     
 });
 firebase.initializeApp({
@@ -30,4 +31,6 @@ function listenDatabase() {
     });
 }
 
-listenDatabase()
+// listenDatabase()
+
+export {rtdb,firestore}
