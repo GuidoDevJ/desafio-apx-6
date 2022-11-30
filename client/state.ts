@@ -18,9 +18,9 @@ const state ={
           publicId: "",
           privateId: "",
           opponentName: "",
-          opponentPlay: null,
-          lastGameOwnerResult: null,
-          lastGameGuestResult: null,
+          opponentPlay: "",
+          lastGameOwnerResult: "",
+          lastGameGuestResult: "",
         },
         gameReady: false,
         playersReady: false,
@@ -285,6 +285,27 @@ const state ={
         body: JSON.stringify({ gameState })
         })
          
+      },
+      getMovementsFromDb(cb?){
+        console.log("Estoy trayendo los datos")
+        const {gameState} = this.getState()
+        const refe = rtdb.ref(`/rooms/${gameState.privateId}`)
+        refe.on("value",(snapShot)=>{
+            const data = snapShot.val()
+            if (data.owner.play != "" && data.guest.play != "") {
+                if(gameState.owner){
+                    gameState.opponentPlay = data.guest.play
+                }
+                if(gameState.owner === false){
+                    gameState.opponentPlay = data.owner.play
+                }
+
+              }
+              if(cb){
+                  console.log(gameState)
+                cb()
+              }
+        })
       }
 }
 

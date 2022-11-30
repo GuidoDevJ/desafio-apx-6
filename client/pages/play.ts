@@ -128,72 +128,91 @@ export const Play=(parametro)=>{
         //     }
         // }
         img.addEventListener("click",(e)=>{
+            const {gameState} = state.getState()
             const clase = img.getAttribute("class")
             // clearInterval(intervalo)
             if(clase === "papel-jugador"){
                 state.setMove("papel")
-                toWin("papel")
+                state.getMovementsFromDb(()=>{
+                    if(gameState.opponentPlay !== ""){
+
+                        toWin("papel")
+                    }
+                })
 
             }else if(clase === "tijera-jugador"){
                 state.setMove("tijeras")
-                toWin("tijeras")
+                state.getMovementsFromDb(()=>{
+                    if(gameState.opponentPlay !== ""){
+
+                        toWin("tijeras")
+                    }
+                    
+                })
 
 
 
             }else{
                 state.setMove("piedra")
-                toWin("piedra")
+                state.getMovementsFromDb(()=>{
+                    if(gameState.opponentPlay !== ""){
+
+                        toWin("piedra")
+                    }
+                })
             }
         },{once})
     }
     
     const toWin=(params)=>{
-        let player = state.getState().currentMoves.myPlay
-        let computer = state.getState().currentMoves.computerPlay
 
+            let player = state.getState().gameState.play
+            let computer = state.getState().gameState.opponentPlay
+            console.log(player,computer,params)
+    
         
-        if(params === "piedra"){
-            piedra?.classList.add("hand-selected")
-            handsJugador?.classList.add("jugando")
-            papel?.remove()
-            tijeras?.remove()
-        }else if(params === "papel"){
-            handsJugador?.classList.add("jugando")
-            papel?.classList.add("hand-selected")
-            piedra?.remove()
-            tijeras?.remove()
-        }else if(params === "tijeras"){
-            handsJugador?.classList.add("jugando")
-            tijeras?.classList.add("hand-selected")
-            piedra?.remove()
-            papel?.remove()
-        }
+        // if(params === "piedra"){
+        //     piedra?.classList.add("hand-selected")
+        //     handsJugador?.classList.add("jugando")
+        //     papel?.remove()
+        //     tijeras?.remove()
+        // }else if(params === "papel"){
+        //     handsJugador?.classList.add("jugando")
+        //     papel?.classList.add("hand-selected")
+        //     piedra?.remove()
+        //     tijeras?.remove()
+        // }else if(params === "tijeras"){
+        //     handsJugador?.classList.add("jugando")
+        //     tijeras?.classList.add("hand-selected")
+        //     piedra?.remove()
+        //     papel?.remove()
+        // }
         
-        timerEle?.remove()
-        handsCompute?.classList.remove("hands-disabled")
+        // timerEle?.remove()
+        // handsCompute?.classList.remove("hands-disabled")
 
-        if(computer === "piedra"){
-            piedraComputer?.classList.add("hand-selected-computer")
-            papelComputer?.classList.add("hand-no-selected")
-            tijeraComputer?.classList.add("hand-no-selected")
-            handsCompute?.classList.add("jugando")
-        }else if(computer === "papel"){
-        papelComputer?.classList.add("hand-selected-computer")
-        tijeraComputer?.classList.add("hand-no-selected")
-        piedraComputer?.classList.add("hand-no-selected")
-        handsCompute?.classList.add("jugando")
-        }else if(computer === "tijeras"){
-            tijeraComputer?.classList.add("hand-selected-computer")
-            piedraComputer?.classList.add("hand-no-selected")
-            papelComputer?.classList.add("hand-no-selected")
-            handsCompute?.classList.add("jugando")
+        // if(computer === "piedra"){
+        //     piedraComputer?.classList.add("hand-selected-computer")
+        //     papelComputer?.classList.add("hand-no-selected")
+        //     tijeraComputer?.classList.add("hand-no-selected")
+        //     handsCompute?.classList.add("jugando")
+        // }else if(computer === "papel"){
+        // papelComputer?.classList.add("hand-selected-computer")
+        // tijeraComputer?.classList.add("hand-no-selected")
+        // piedraComputer?.classList.add("hand-no-selected")
+        // handsCompute?.classList.add("jugando")
+        // }else if(computer === "tijeras"){
+        //     tijeraComputer?.classList.add("hand-selected-computer")
+        //     piedraComputer?.classList.add("hand-no-selected")
+        //     papelComputer?.classList.add("hand-no-selected")
+        //     handsCompute?.classList.add("jugando")
 
-        }
-        state.whoWins(player,computer)
-        setTimeout(() => {
-            let result = state.getState().result[0];
-            parametro.goTo(`/${result}`)
-        },1500);
+        // }
+        // state.whoWins(player,computer)
+        // setTimeout(() => {
+        //     let result = state.getState().result[0];
+        //     parametro.goTo(`/${result}`)
+        // },1500);
     }
     
     div.appendChild(style)
