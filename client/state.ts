@@ -31,14 +31,14 @@ const state ={
     },
     listeners:[],
     init(){
-        let data = localStorage.getItem("save-score")
+        let data = localStorage.getItem("dataLocal")
         if(data === null){
             console.log("Estas por iniciar el juego")
         }if(data){
-            this.data.scoreboard = JSON.parse(data)
+            this.data = JSON.parse(data)
             return
         }
-        localStorage.setItem("save-score",JSON.stringify(this.data.scoreboard))
+        localStorage.setItem("dataLocal",JSON.stringify(this.data))
     },
 
     whoWins(movePlayer:Jugada,moveComputer:Jugada){
@@ -54,25 +54,33 @@ const state ={
         let empate = [tijerasEmpate,papelEmpate,piedraEmpate].includes(true)
         if(ownerWinner){
             // resultado[0] = "ganaste"
-            data.scoreboard.owner++
+            data.scoreboard.owner+1
             data.gameState.lastGameOwnerResult = "ganaste"
             data.gameState.lastGameGuestResult = "perdiste"
             console.log("Gano el"+ data.gameState.name+ "perdio el " + data.gameState.opponentName)
-            this.saveScore()
+            this.saveData()
         }else if(empate){
             data.gameState.lastGameOwnerResult = "empataste"
             data.gameState.lastGameGuestResult = "empataste"
             return  
 
         }else{
-            data.scoreboard.guest++
+            data.scoreboard.guest+1
             data.gameState.lastGameGuestResult = "ganaste"
             data.gameState.lastGameOwnerResult = "perdiste"
             console.log("Gano el"+data.gameState.opponentName+ "perdio el "+data.gameState.name)
-            return  this.saveScore()
+            return  this.saveData()
 
         }
 
+    },
+    setLastResults(){
+        const cs = this.getState()
+        cs.gameState.lastGameOwnerResult = ""
+        cs.gameState.lastGameGuestResult = ""
+        cs.gameState.play = ""
+        cs.gameState.opponentPlay = ""
+        this.setState(cs)
     },
     getState(){
         return this.data
@@ -85,18 +93,9 @@ const state ={
     suscribe(callback : ()=>{}){
         this.data.listeners.push(callback)
     },
-    // pushToHistory(resultado :Result){
-    //     if(resultado === "ganaste"){
-    //         this.data.scoreboard.jugador++
-    //     }else if(resultado === "perdiste"){
-    //         this.data.historyScore.computadora++
-    //     }
-    //     this.saveScore()
-    // },
-    saveScore(){
-        let score = this.getState().scoreboard
-        console.log(score)
-        localStorage.setItem("save-score",JSON.stringify(score))
+    saveData(){
+        const cs = this.getState()
+        localStorage.setItem("dataLocal",JSON.stringify(cs))
     },
     // deleteScore(){
     // const deleData = {jugador:0,computadora:0}

@@ -4,15 +4,16 @@ import "../components/buttom/button"
 import {state} from "../state"
 
 export const Ganaste=(params)=>{
-    let cs = state.getState()
-    let {gameState} = state.getState()
+    state.setLastResults()
+    state.setReadyStatus(false)
+    let cs = JSON.parse(localStorage.getItem("dataLocal") as any)
     let player =null
     let opponent = null
-    if(gameState.owner){
+    if(cs.gameState.owner){
         player = cs.scoreboard.owner
         opponent = cs.scoreboard.guest
     } 
-    if(gameState.owner === false){
+    if(cs.gameState.owner === false){
         player = cs.scoreboard.guest
         opponent = cs.scoreboard.owner
     }

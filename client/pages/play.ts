@@ -107,30 +107,10 @@ export const Play=(parametro)=>{
     const handsJugador = div.querySelector(".hands-jugador")
     const timerEle = div.querySelector(".contador")
     for(const img of images.children){
-        // function removeListeners(e) {
-        //     // removemos el evento
-        //     e.target.removeEventListener(e.type, removeListeners);
-        //     const clase = img.getAttribute("class")
-        //     // clearInterval(intervalo)
-        //     if(clase === "papel-jugador"){
-        //         state.setMove("papel")
-        //         toWin("papel")
-
-        //     }else if(clase === "tijera-jugador"){
-        //         state.setMove("tijeras")
-        //         toWin("tijeras")
-
-
-
-        //     }else{
-        //         state.setMove("piedra")
-        //         toWin("piedra")
-        //     }
-        // }
         img.addEventListener("click",(e)=>{
             const {gameState} = state.getState()
             const clase = img.getAttribute("class")
-            // clearInterval(intervalo)
+            clearInterval(intervalo)
             if(clase === "papel-jugador"){
                 state.setMove("papel")
                 state.getMovementsFromDb(()=>{
@@ -221,8 +201,6 @@ export const Play=(parametro)=>{
             if(gameState.owner === false){
                 result = gameState.lastGameGuestResult
             }
-            console.log(result,gameState)
-
                 parametro.goTo(`/${result}`)
         },1500);
     }
