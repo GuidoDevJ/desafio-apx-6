@@ -41,43 +41,6 @@ const state ={
         localStorage.setItem("dataLocal",JSON.stringify(this.data))
     },
 
-    // whoWins(movePlayer:Jugada,moveComputer:Jugada){
-    //     let data = this.getState()
-    //     let dataLocal = JSON.parse(localStorage.getItem("dataLocal") as any)
-    //     let tijeraGanaJugador : boolean = movePlayer === "tijeras" && moveComputer === "papel"
-    //     let papelGanaJugador : boolean = movePlayer ==="papel" && moveComputer === "piedra"
-    //     let piedraGanaJugador : boolean = movePlayer ==="piedra" && moveComputer === "tijeras"
-    //     let ownerWinner = [tijeraGanaJugador,papelGanaJugador,piedraGanaJugador].includes(true)
-
-    //     let tijerasEmpate : boolean = movePlayer === "tijeras" && moveComputer === "tijeras"
-    //     let papelEmpate : boolean = movePlayer ==="papel" && moveComputer === "papel"
-    //     let piedraEmpate : boolean = movePlayer ==="piedra" && moveComputer === "piedra"
-    //     let empate = [tijerasEmpate,papelEmpate,piedraEmpate].includes(true)
-    //     if(ownerWinner){
-    //         dataLocal.scoreboard.owner++
-    //         data.scoreboard.owner = dataLocal.scoreboard.owner
-    //         data.gameState.lastGameOwnerResult = "ganaste"
-    //         data.gameState.lastGameGuestResult = "perdiste"
-    //         console.log("Gano el"+ data.gameState.name+ "perdio el " + data.gameState.opponentName)
-    //         console.log(data)
-    //         return this.saveData()
-    //     }else if(empate){
-    //         data.gameState.lastGameOwnerResult = "empataste"
-    //         data.gameState.lastGameGuestResult = "empataste"
-    //         console.log(data)
-    //         return  
-
-    //     }else{
-    //         data.scoreboard.guest++
-    //         data.gameState.lastGameGuestResult = "ganaste"
-    //         data.gameState.lastGameOwnerResult = "perdiste"
-    //         console.log(data)
-    //         console.log("Gano el"+data.gameState.opponentName+ "perdio el "+data.gameState.name)
-    //         return  this.saveData()
-
-    //     }
-
-    // },
     whoWins(ownerPlay: string, guestPlay: string) {
         const ownerWinningOutcomes = [
           { ownerPlay: "piedra", guestPlay: "tijera" },

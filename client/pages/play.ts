@@ -2,11 +2,9 @@ import { once } from "events"
 import{state} from"../state"
 
 export const Play=(parametro)=>{
-    let cs = state.getState()
-
-    console.log(cs.scoreboard)
-
-    let counter = 3
+    const cs = state.getState()
+    const {gameState} = cs
+    let counter = 5
     const intervalo: any = setInterval(() => {
     counter--;
     const contadorEl = div.querySelector(".contador") as any
@@ -116,17 +114,13 @@ export const Play=(parametro)=>{
             clearInterval(intervalo)
             if(clase === "papel-jugador"){
                 state.setMove("papel")
-                state.getMovementsFromDb(()=>{
-                    if(gameState.opponentPlay !== "" && gameState.play !== ""){
-
-                        toWin("papel")
-                    }
-                })
+                state.getMovementsFromDb()
+                    toWin("papel")
 
             }else if(clase === "tijera-jugador"){
                 state.setMove("tijeras")
                 state.getMovementsFromDb(()=>{
-                    if(gameState.opponentPlay !== "" && gameState.play !== ""){
+                    if(gameState.opponentPlay !== ""){
 
                         toWin("tijeras")
                     }
@@ -138,31 +132,51 @@ export const Play=(parametro)=>{
             }else{
                 state.setMove("piedra")
                 state.getMovementsFromDb(()=>{
-                    if(gameState.opponentPlay !== "" && gameState.play !== ""){
-
+                    if(gameState.opponentPlay !== ""){
                         toWin("piedra")
                     }
                 })
             }
         },{once})
+      
     }
+    setTimeout(() => {
+        const {gameState} = state.getState()
+        let player = ""
+    let computer = ""
+    if(gameState.owner){
+         player = state.getState().gameState.play
+        computer = state.getState().gameState.opponentPlay
+    }
+    if(gameState.owner === false){
+        player = state.getState().gameState.opponentPlay
+        computer = state.getState().gameState.play 
+    }
+        state.whoWins(player,computer)
+        let result = "empataste"
+        if(gameState.owner){
+            result = gameState.lastGameOwnerResult
+        } 
+        if(gameState.owner === false){
+            result = gameState.lastGameGuestResult
+        }
+            parametro.goTo(`/${result}`)
+    },3500);
     
     const toWin=(params)=>{
-        const cs = state.getState()
-        const {gameState} = state.getState()
-        let player= ""
-        let computer = "" 
+        let player = ""
+        let computer = ""
         if(gameState.owner){
-            player = gameState.play
-            computer = gameState.opponentPlay
+             player = state.getState().gameState.play
+            computer = state.getState().gameState.opponentPlay
+        }
+        if(gameState.owner === false){
+            player = state.getState().gameState.opponentPlay
+            computer = state.getState().gameState.play 
         }
             
-        if(gameState.owner === false){
-            player = gameState.opponentPlay
-            computer = gameState.play
-        }
 
-            if(params === "piedra"){
+         if(params === "piedra"){
             piedra?.classList.add("hand-selected")
             handsJugador?.classList.add("jugando")
             papel?.remove()
@@ -199,19 +213,6 @@ export const Play=(parametro)=>{
             handsCompute?.classList.add("jugando")
 
         }
-
-        state.whoWins(player as any,computer as any)
-        setTimeout(() => {
-            let {gameState} = state.getState()
-            let result = "empataste"
-            if(gameState.owner){
-                result = gameState.lastGameOwnerResult
-            } 
-            if(gameState.owner === false){
-                result = gameState.lastGameGuestResult
-            }
-                parametro.goTo(`/${result}`)
-        },1500);
     }
     
     div.appendChild(style)
