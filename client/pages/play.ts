@@ -4,15 +4,15 @@ import{state} from"../state"
 export const Play=(parametro)=>{
     console.log(state.getState())
     let counter = 3
-    // const intervalo: any = setInterval(() => {
-    // counter--;
-    // const contadorEl = div.querySelector(".contador") as any
-    // contadorEl.textContent = String(counter)
-    // if (counter === 0) {
-    //   clearInterval(intervalo)
-    //   parametro.goTo("/intructions")
-    // }
-    // }, 1000)
+    const intervalo: any = setInterval(() => {
+    counter--;
+    const contadorEl = div.querySelector(".contador") as any
+    contadorEl.textContent = String(counter)
+    if (counter === 0) {
+      clearInterval(intervalo)
+      parametro.goTo("/intructions")
+    }
+    }, 1000)
 
     const div = document.createElement("div")
     const style = document.createElement("style")
@@ -165,54 +165,66 @@ export const Play=(parametro)=>{
     }
     
     const toWin=(params)=>{
-
+        const {gameState} = state.getState()
             let player = state.getState().gameState.play
             let computer = state.getState().gameState.opponentPlay
-            console.log(player,computer,params)
-    
-        
-        // if(params === "piedra"){
-        //     piedra?.classList.add("hand-selected")
-        //     handsJugador?.classList.add("jugando")
-        //     papel?.remove()
-        //     tijeras?.remove()
-        // }else if(params === "papel"){
-        //     handsJugador?.classList.add("jugando")
-        //     papel?.classList.add("hand-selected")
-        //     piedra?.remove()
-        //     tijeras?.remove()
-        // }else if(params === "tijeras"){
-        //     handsJugador?.classList.add("jugando")
-        //     tijeras?.classList.add("hand-selected")
-        //     piedra?.remove()
-        //     papel?.remove()
-        // }
-        
-        // timerEle?.remove()
-        // handsCompute?.classList.remove("hands-disabled")
 
-        // if(computer === "piedra"){
-        //     piedraComputer?.classList.add("hand-selected-computer")
-        //     papelComputer?.classList.add("hand-no-selected")
-        //     tijeraComputer?.classList.add("hand-no-selected")
-        //     handsCompute?.classList.add("jugando")
-        // }else if(computer === "papel"){
-        // papelComputer?.classList.add("hand-selected-computer")
-        // tijeraComputer?.classList.add("hand-no-selected")
-        // piedraComputer?.classList.add("hand-no-selected")
-        // handsCompute?.classList.add("jugando")
-        // }else if(computer === "tijeras"){
-        //     tijeraComputer?.classList.add("hand-selected-computer")
-        //     piedraComputer?.classList.add("hand-no-selected")
-        //     papelComputer?.classList.add("hand-no-selected")
-        //     handsCompute?.classList.add("jugando")
+            if(params === "piedra"){
+            piedra?.classList.add("hand-selected")
+            handsJugador?.classList.add("jugando")
+            papel?.remove()
+            tijeras?.remove()
+        }else if(params === "papel"){
+            handsJugador?.classList.add("jugando")
+            papel?.classList.add("hand-selected")
+            piedra?.remove()
+            tijeras?.remove()
+        }else if(params === "tijeras"){
+            handsJugador?.classList.add("jugando")
+            tijeras?.classList.add("hand-selected")
+            piedra?.remove()
+            papel?.remove()
+        }
+        
+        timerEle?.remove()
+        handsCompute?.classList.remove("hands-disabled")
 
-        // }
-        // state.whoWins(player,computer)
-        // setTimeout(() => {
-        //     let result = state.getState().result[0];
-        //     parametro.goTo(`/${result}`)
-        // },1500);
+        if(computer === "piedra"){
+            piedraComputer?.classList.add("hand-selected-computer")
+            papelComputer?.classList.add("hand-no-selected")
+            tijeraComputer?.classList.add("hand-no-selected")
+            handsCompute?.classList.add("jugando")
+        }else if(computer === "papel"){
+        papelComputer?.classList.add("hand-selected-computer")
+        tijeraComputer?.classList.add("hand-no-selected")
+        piedraComputer?.classList.add("hand-no-selected")
+        handsCompute?.classList.add("jugando")
+        }else if(computer === "tijeras"){
+            tijeraComputer?.classList.add("hand-selected-computer")
+            piedraComputer?.classList.add("hand-no-selected")
+            papelComputer?.classList.add("hand-no-selected")
+            handsCompute?.classList.add("jugando")
+
+        }
+        if(gameState.owner){
+            state.whoWins(player,computer)
+        }
+        if(gameState.owner === false){
+            state.whoWins(computer,player)
+        }
+        setTimeout(() => {
+            let {gameState} = state.getState()
+            let result = "empataste"
+            if(gameState.owner){
+                result = gameState.lastGameOwnerResult
+            } 
+            if(gameState.owner === false){
+                result = gameState.lastGameGuestResult
+            }
+            console.log(result,gameState)
+
+                parametro.goTo(`/${result}`)
+        },1500);
     }
     
     div.appendChild(style)

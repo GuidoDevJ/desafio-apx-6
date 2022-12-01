@@ -4,9 +4,19 @@ import "../components/buttom/button"
 import {state} from "../state"
 
 export const Ganaste=(params)=>{
-    let stateAct = state.getState().historyScore
-    let player = stateAct.jugador
-    let machine = stateAct.computadora
+    let cs = state.getState()
+    let {gameState} = state.getState()
+    let player =null
+    let opponent = null
+    if(gameState.owner){
+        player = cs.scoreboard.owner
+        opponent = cs.scoreboard.guest
+    } 
+    if(gameState.owner === false){
+        player = cs.scoreboard.guest
+        opponent = cs.scoreboard.owner
+    }
+    
     let div = document.createElement("div")
     let style = document.createElement("style")
     style.innerHTML = `
@@ -32,7 +42,7 @@ export const Ganaste=(params)=>{
     div.classList.add("contenedor")
     div.innerHTML = `
         <star-win></star-win>
-        <custom-score player=${player} computer=${machine}></custom-score>
+        <custom-score player=${player} computer=${opponent}></custom-score>
         <custom-button class="btnEl">Volver a jugar</custom-button>
         <custom-button class="reiniciar">Reset Score</custom-button>
     `
@@ -43,7 +53,7 @@ export const Ganaste=(params)=>{
         params.goTo("/intructions")
     })
     reset.addEventListener("click",e=>{
-        state.deleteScore()
+        // state.deleteScore()
         params.goTo("/home")
         state.init()
     })
