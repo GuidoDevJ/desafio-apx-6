@@ -10,6 +10,8 @@ import { state } from "../state"
 export const Waiting=(params)=>{
     // Crear un player que venga del state
     let cs = state.getState()
+    console.log(cs.scoreboard)
+
     const div = document.createElement("div")
     const style = document.createElement("style")
     div.classList.add("contenedor")

@@ -41,39 +41,98 @@ const state ={
         localStorage.setItem("dataLocal",JSON.stringify(this.data))
     },
 
-    whoWins(movePlayer:Jugada,moveComputer:Jugada){
-        let data = this.getState()
-        let tijeraGanaJugador : boolean = movePlayer === "tijeras" && moveComputer === "papel"
-        let papelGanaJugador : boolean = movePlayer ==="papel" && moveComputer === "piedra"
-        let piedraGanaJugador : boolean = movePlayer ==="piedra" && moveComputer === "tijeras"
-        let ownerWinner = [tijeraGanaJugador,papelGanaJugador,piedraGanaJugador].includes(true)
+    // whoWins(movePlayer:Jugada,moveComputer:Jugada){
+    //     let data = this.getState()
+    //     let dataLocal = JSON.parse(localStorage.getItem("dataLocal") as any)
+    //     let tijeraGanaJugador : boolean = movePlayer === "tijeras" && moveComputer === "papel"
+    //     let papelGanaJugador : boolean = movePlayer ==="papel" && moveComputer === "piedra"
+    //     let piedraGanaJugador : boolean = movePlayer ==="piedra" && moveComputer === "tijeras"
+    //     let ownerWinner = [tijeraGanaJugador,papelGanaJugador,piedraGanaJugador].includes(true)
 
-        let tijerasEmpate : boolean = movePlayer === "tijeras" && moveComputer === "tijeras"
-        let papelEmpate : boolean = movePlayer ==="papel" && moveComputer === "papel"
-        let piedraEmpate : boolean = movePlayer ==="piedra" && moveComputer === "piedra"
-        let empate = [tijerasEmpate,papelEmpate,piedraEmpate].includes(true)
-        if(ownerWinner){
-            // resultado[0] = "ganaste"
-            data.scoreboard.owner+1
-            data.gameState.lastGameOwnerResult = "ganaste"
-            data.gameState.lastGameGuestResult = "perdiste"
-            console.log("Gano el"+ data.gameState.name+ "perdio el " + data.gameState.opponentName)
-            this.saveData()
-        }else if(empate){
-            data.gameState.lastGameOwnerResult = "empataste"
-            data.gameState.lastGameGuestResult = "empataste"
-            return  
+    //     let tijerasEmpate : boolean = movePlayer === "tijeras" && moveComputer === "tijeras"
+    //     let papelEmpate : boolean = movePlayer ==="papel" && moveComputer === "papel"
+    //     let piedraEmpate : boolean = movePlayer ==="piedra" && moveComputer === "piedra"
+    //     let empate = [tijerasEmpate,papelEmpate,piedraEmpate].includes(true)
+    //     if(ownerWinner){
+    //         dataLocal.scoreboard.owner++
+    //         data.scoreboard.owner = dataLocal.scoreboard.owner
+    //         data.gameState.lastGameOwnerResult = "ganaste"
+    //         data.gameState.lastGameGuestResult = "perdiste"
+    //         console.log("Gano el"+ data.gameState.name+ "perdio el " + data.gameState.opponentName)
+    //         console.log(data)
+    //         return this.saveData()
+    //     }else if(empate){
+    //         data.gameState.lastGameOwnerResult = "empataste"
+    //         data.gameState.lastGameGuestResult = "empataste"
+    //         console.log(data)
+    //         return  
 
-        }else{
-            data.scoreboard.guest+1
-            data.gameState.lastGameGuestResult = "ganaste"
-            data.gameState.lastGameOwnerResult = "perdiste"
-            console.log("Gano el"+data.gameState.opponentName+ "perdio el "+data.gameState.name)
-            return  this.saveData()
+    //     }else{
+    //         data.scoreboard.guest++
+    //         data.gameState.lastGameGuestResult = "ganaste"
+    //         data.gameState.lastGameOwnerResult = "perdiste"
+    //         console.log(data)
+    //         console.log("Gano el"+data.gameState.opponentName+ "perdio el "+data.gameState.name)
+    //         return  this.saveData()
 
+    //     }
+
+    // },
+    whoWins(ownerPlay: string, guestPlay: string) {
+        const ownerWinningOutcomes = [
+          { ownerPlay: "piedra", guestPlay: "tijera" },
+          { ownerPlay: "tijera", guestPlay: "papel" },
+          { ownerPlay: "papel", guestPlay: "piedra" },
+        ];
+    
+        let ownerResult = "perdiste";
+        for (const o of ownerWinningOutcomes) {
+          if (o.ownerPlay == ownerPlay && o.guestPlay == guestPlay) {
+            ownerResult = "ganaste";
+          } else if (ownerPlay == guestPlay) {
+            ownerResult = "empataste";
+          }
         }
-
-    },
+    
+        let guestResult = "";
+        if (ownerResult == "perdiste") {
+          guestResult = "ganaste";
+        } else if (ownerResult == "ganaste") {
+          guestResult = "perdiste";
+        } else if (ownerResult == "empate") {
+          guestResult = "empate";
+        }
+    
+        this.setWinner(ownerResult, guestResult);
+      },
+    
+      // setea en el state quien gano desde la perspectiva del OWNER
+    
+      setWinner(resultOfOwner: string, resultOfGuest: string): void {
+        const data = this.getState();
+        console.log("Estoy en el setWinner", data.scoreboard,data.gameState.owner)
+        if (resultOfOwner == "empataste") {
+          data.gameState.lastGameOwnerResult = resultOfOwner;
+          data.gameState.lastGameGuestResult = resultOfGuest;
+          return;
+        }
+        if (resultOfOwner == "ganaste") {
+          data.scoreboard.owner++;
+          data.gameState.lastGameOwnerResult = resultOfOwner;
+          data.gameState.lastGameGuestResult = resultOfGuest;
+          console.log("Estoy en el setWinner", data.scoreboard,data.gameState.owner)
+    
+          return this.saveData();
+        }
+        if (resultOfOwner == "perdiste") {
+          data.scoreboard.guest++;
+          data.gameState.lastGameOwnerResult = resultOfOwner;
+          data.gameState.lastGameGuestResult = resultOfGuest;
+          console.log("Estoy en el setWinner", data.scoreboard,data.gameState.owner)
+    
+          return this.saveData();
+        }
+      },
     setLastResults(){
         const cs = this.getState()
         cs.gameState.lastGameOwnerResult = ""
@@ -104,7 +163,6 @@ const state ={
     setNombreOwn(name:string){
         const cs = this.getState()
         cs.gameState.name = name
-        console.log(cs)
         this.setState(cs)
     },
     singIn(cb?){
@@ -173,7 +231,6 @@ const state ={
     },
     connectarStateToRtdb(cb){
         const cs = this.getState()
-        console.log(cs.gameState)
         let rtdbkey = cs.gameState.privateId
         fetch(BASE_URL+`rooms/${rtdbkey}`,{
             method:"Post",
@@ -197,7 +254,6 @@ const state ={
         cs.gameState.online = true
         const data = await fetch(BASE_URL+`rooms/${id}`)
         let json = await data.json()
-        console.log(json)
         cs.gameState.privateId = json.rtdbRoomId
         this.setState(cs)
         if(cb){
@@ -288,7 +344,6 @@ const state ={
          
       },
       getMovementsFromDb(cb?){
-        console.log("Estoy trayendo los datos")
         const {gameState} = this.getState()
         const refe = rtdb.ref(`/rooms/${gameState.privateId}`)
         refe.on("value",(snapShot)=>{
@@ -303,7 +358,6 @@ const state ={
 
               }
               if(cb){
-                  console.log(gameState)
                 cb()
               }
         })

@@ -2,7 +2,10 @@ import { once } from "events"
 import{state} from"../state"
 
 export const Play=(parametro)=>{
-    console.log(state.getState())
+    let cs = state.getState()
+
+    console.log(cs.scoreboard)
+
     let counter = 3
     const intervalo: any = setInterval(() => {
     counter--;
@@ -114,7 +117,7 @@ export const Play=(parametro)=>{
             if(clase === "papel-jugador"){
                 state.setMove("papel")
                 state.getMovementsFromDb(()=>{
-                    if(gameState.opponentPlay !== ""){
+                    if(gameState.opponentPlay !== "" && gameState.play !== ""){
 
                         toWin("papel")
                     }
@@ -123,7 +126,7 @@ export const Play=(parametro)=>{
             }else if(clase === "tijera-jugador"){
                 state.setMove("tijeras")
                 state.getMovementsFromDb(()=>{
-                    if(gameState.opponentPlay !== ""){
+                    if(gameState.opponentPlay !== "" && gameState.play !== ""){
 
                         toWin("tijeras")
                     }
@@ -135,7 +138,7 @@ export const Play=(parametro)=>{
             }else{
                 state.setMove("piedra")
                 state.getMovementsFromDb(()=>{
-                    if(gameState.opponentPlay !== ""){
+                    if(gameState.opponentPlay !== "" && gameState.play !== ""){
 
                         toWin("piedra")
                     }
@@ -145,9 +148,19 @@ export const Play=(parametro)=>{
     }
     
     const toWin=(params)=>{
+        const cs = state.getState()
         const {gameState} = state.getState()
-            let player = state.getState().gameState.play
-            let computer = state.getState().gameState.opponentPlay
+        let player= ""
+        let computer = "" 
+        if(gameState.owner){
+            player = gameState.play
+            computer = gameState.opponentPlay
+        }
+            
+        if(gameState.owner === false){
+            player = gameState.opponentPlay
+            computer = gameState.play
+        }
 
             if(params === "piedra"){
             piedra?.classList.add("hand-selected")
@@ -186,12 +199,8 @@ export const Play=(parametro)=>{
             handsCompute?.classList.add("jugando")
 
         }
-        if(gameState.owner){
-            state.whoWins(player,computer)
-        }
-        if(gameState.owner === false){
-            state.whoWins(computer,player)
-        }
+
+        state.whoWins(player as any,computer as any)
         setTimeout(() => {
             let {gameState} = state.getState()
             let result = "empataste"
