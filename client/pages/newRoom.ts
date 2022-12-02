@@ -1,17 +1,17 @@
-import "../components/buttom/button"
-import "../components/input/input"
-import"../components/presentacionTitle/presentacion"
-import"../components/papel-hand/hand"
-import"../components/piedra-hand/piedra"
-import"../components/tijeras-hand/tijeras"
-import { state } from "../state"
+import "../components/buttom/button";
+import "../components/input/input";
+import "../components/presentacionTitle/presentacion";
+import "../components/papel-hand/hand";
+import "../components/piedra-hand/piedra";
+import "../components/tijeras-hand/tijeras";
+import { state } from "../state";
 
-export const NewRoom=(params)=>{
-    const div = document.createElement("div")
-    const style = document.createElement("style")
-    div.classList.add("contenedor")
-    
-    div.innerHTML = `
+export const NewRoom = (params) => {
+  const div = document.createElement("div");
+  const style = document.createElement("style");
+  div.classList.add("contenedor");
+
+  div.innerHTML = `
     <custom-title></custom-title>
     <div class="buttons">
     <h2>Tu Nombre</h2>
@@ -23,8 +23,8 @@ export const NewRoom=(params)=>{
         <hand-tijeras></hand-tijeras>
         <papel-hand></papel-hand>
     </div>
-    `
-    style.innerHTML=`
+    `;
+  style.innerHTML = `
     .contenedor{
         display: flex;
         flex-direction: column;
@@ -60,17 +60,26 @@ export const NewRoom=(params)=>{
         font-size:40px;
         text-align:center;
     }
-    `
-    const btn = div.querySelector(".btnEl") as HTMLElement
-    const input = div.querySelector(".input") as any
-    btn.addEventListener("click",e=>{
-        state.setNombreOwn(input.value)
-        state.singIn(()=>{
-            state.askNewRoom(()=>{
-                params.goTo("/connect")
-            })
-        })
-    })
-    div.appendChild(style)
-    return div
-}
+    `;
+  const btn = div.querySelector(".btnEl") as HTMLElement;
+  const input = div.querySelector(".input") as any;
+  btn.addEventListener("click", (e) => {
+    const pattern = new RegExp("^[A-Z]+$", "i");
+    e.preventDefault();
+    console.log(input.value);
+    if (input.value === "") {
+      alert("Por favor ingrese algun nombre");
+    } else if (!pattern.test(input.value)) {
+      alert("No se aceptan numeros como valores validos");
+    } else {
+      state.setNombreOwn(input.value);
+      state.singIn(() => {
+        state.askNewRoom(() => {
+          params.goTo("/connect");
+        });
+      });
+    }
+  });
+  div.appendChild(style);
+  return div;
+};

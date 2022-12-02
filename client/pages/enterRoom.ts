@@ -1,17 +1,17 @@
-import "../components/buttom/button"
-import "../components/input/input"
-import"../components/presentacionTitle/presentacion"
-import"../components/papel-hand/hand"
-import"../components/piedra-hand/piedra"
-import"../components/tijeras-hand/tijeras"
-import { state } from "../state"
+import "../components/buttom/button";
+import "../components/input/input";
+import "../components/presentacionTitle/presentacion";
+import "../components/papel-hand/hand";
+import "../components/piedra-hand/piedra";
+import "../components/tijeras-hand/tijeras";
+import { state } from "../state";
 
-export const EnterRoom=(params)=>{
-    const div = document.createElement("div")
-    const style = document.createElement("style")
-    div.classList.add("contenedor")
-    
-    div.innerHTML = `
+export const EnterRoom = (params) => {
+  const div = document.createElement("div");
+  const style = document.createElement("style");
+  div.classList.add("contenedor");
+
+  div.innerHTML = `
     <custom-title></custom-title>
     <div class="buttons">
     <input placeholder="Nombre" class="input name"/>
@@ -23,8 +23,8 @@ export const EnterRoom=(params)=>{
         <hand-tijeras></hand-tijeras>
         <papel-hand></papel-hand>
     </div>
-    `
-    style.innerHTML=`
+    `;
+  style.innerHTML = `
     .contenedor{
         display: flex;
         flex-direction: column;
@@ -60,18 +60,23 @@ export const EnterRoom=(params)=>{
         font-size:40px;
         text-align:center;
     }
-    `
-    const btn = div.querySelector(".btnEl")
-    const name = div.querySelector(".name") as any
-    const code = div.querySelector(".code") as any
-    btn?.addEventListener("click",e=>{
-        state.setNombreOwn(name.value)
-        state.singIn(()=>{
-            state.sincronizarDatos(code.value,()=>{
-                state.joinToRoom(params.goTo("/intructions"))
-            })
-        })
-    })
-    div.appendChild(style)
-    return div
-}
+    `;
+  const btn = div.querySelector(".btnEl");
+  const name = div.querySelector(".name") as any;
+  const code = div.querySelector(".code") as any;
+  btn?.addEventListener("click", (e) => {
+    state.setNombreOwn(name.value);
+    // state.singIn(()=>{
+    //     state.sincronizarDatos(code.value,()=>{
+    //         // state.joinToRoom(params.goTo("/intructions"))
+    //     })
+    // })
+    state.sincronizarDatos(code.value, () => {
+      state.singIn(() => {
+        state.joinToRoom(params.goTo("/intructions"));
+      });
+    });
+  });
+  div.appendChild(style);
+  return div;
+};
