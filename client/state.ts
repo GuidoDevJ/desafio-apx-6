@@ -3,7 +3,7 @@ import { rtdb } from "./db";
 type Jugada = "piedra" | "tijeras" | "papel";
 type Result = "empataste" | "ganaste" | "perdiste";
 
-const BASE_URL = process.env.URL+"/" || "http://localhost:3001/";
+const BASE_URL = process.env.PORT+"/" || "http://localhost:3001/";
 
 const state = {
   data: {
