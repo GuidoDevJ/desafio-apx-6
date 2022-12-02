@@ -13,8 +13,9 @@ admin.initializeApp({
     
 });
 firebase.initializeApp({
-    databaseURL: `${process.env.databaseURL.toString()}`,
+    databaseURL: `${process.env.databaseURL}`,
 })
+console.log(`${process.env.databaseURL}`)
 
 const firestore =   admin.firestore()
 const rtdb = firebase.database()
