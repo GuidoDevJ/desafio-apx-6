@@ -9,7 +9,7 @@ Las funciones del backend son:
 * Tener una API documentada con Postman
 -----------
 ## Documentacion 
-* [Documentacion de la api](www.google.com)
+* [Documentacion de la api](https://markdown.es/sintaxis-markdown/)
 * * * 
 ## Link del Juego
 * [Game](www.google.com)
