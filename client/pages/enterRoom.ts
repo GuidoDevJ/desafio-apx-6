@@ -5,6 +5,7 @@ import "../components/papel-hand/hand";
 import "../components/piedra-hand/piedra";
 import "../components/tijeras-hand/tijeras";
 import { state } from "../state";
+import Swal from "sweetalert2";
 
 export const EnterRoom = (params) => {
   const div = document.createElement("div");
@@ -65,17 +66,23 @@ export const EnterRoom = (params) => {
   const name = div.querySelector(".name") as any;
   const code = div.querySelector(".code") as any;
   btn?.addEventListener("click", (e) => {
-    state.setNombreOwn(name.value);
-    // state.singIn(()=>{
-    //     state.sincronizarDatos(code.value,()=>{
-    //         // state.joinToRoom(params.goTo("/intructions"))
-    //     })
-    // })
-    state.sincronizarDatos(code.value, () => {
-      state.singIn(() => {
-        state.joinToRoom(params.goTo("/intructions"));
+    if (name.value === "") {
+      Swal.fire({
+        title: "Por favor ingrese algun nombre",
+        backdrop: true,
+        icon: "warning",
       });
-    });
+    } else {
+      state.setNombreOwn(name.value);
+
+      state.sincronizarDatos(code.value, () => {
+        state.singIn(() => {
+          state.joinToRoom(() => {
+            params.goTo("/intructions");
+          },params.goTo("/error"));
+        });
+      });
+    }
   });
   div.appendChild(style);
   return div;

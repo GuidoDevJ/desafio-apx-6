@@ -44,18 +44,17 @@ export const Lose=(params)=>{
         <star-lose></star-lose>
         <custom-score player=${player} computer=${opponent}></custom-score>
         <custom-button class="btnEl">Volver a jugar</custom-button>
-        <custom-button class="reiniciar">Reset Score</custom-button>
     `
     let btn = div.querySelector(".btnEl") as Element
     let reset = div.querySelector(".reiniciar") as Element
     btn.addEventListener("click",e=>{
         params.goTo("/intructions")
     })
-    reset.addEventListener("click",e=>{
-        // state.deleteScore()
-        params.goTo("/home")
-        state.init()
-    })
+    // reset.addEventListener("click",e=>{
+    //     // state.deleteScore()
+    //     params.goTo("/home")
+    //     state.init()
+    // })
     div.appendChild(style)
     return div
 }

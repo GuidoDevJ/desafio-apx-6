@@ -10,13 +10,27 @@ import { state } from "../state"
 
 export const Intructions=(params)=>{
     const cs = state.getState()
-    console.log(cs)
+    const dataLocal = JSON.parse(localStorage.getItem("dataLocal") as any)
+    let nameOwner;
+    let nameGuest;
+
+    if(cs.gameState.owner){
+        nameOwner = cs.gameState.name
+        nameGuest = cs.gameState.opponentName
+    }
+    if(cs.gameState.owner === false){
+        nameOwner = cs.gameState.opponentName
+        nameGuest = cs.gameState.name
+
+    }
+
+    const {scoreboard} = dataLocal
     const div = document.createElement("div")
     const style = document.createElement("style")
     div.classList.add("contenedor")
     
     div.innerHTML = `
-    <custom-header player1="${cs.gameState.name}" play2="${cs.gameState.opponentName}" roomId="${cs.gameState.publicId}"></custom-header>
+    <custom-header player1="${nameOwner}" play2="${nameGuest}" roomId="${cs.gameState.publicId}" point1="${scoreboard.owner}" point2="${scoreboard.guest}"></custom-header>
     <text-long></text-long>
     <custom-button class="btnEl">Jugar</custom-button>
     <div class="hands">

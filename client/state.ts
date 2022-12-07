@@ -1,14 +1,17 @@
 import { rtdb } from "./db";
+import * as dotenv from 'dotenv' // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
+import Swal from 'sweetalert2';
+dotenv.config()
 
 type Jugada = "piedra" | "tijeras" | "papel";
 type Result = "empataste" | "ganaste" | "perdiste";
 
-const BASE_URL = process.env.PORT+"/" || "http://localhost:3001/";
+const BASE_URL = process.env.PORT || "http://localhost:3001/";
 
 const state = {
   data: {
     gameState: {
-      currentPage: null,
+
       name: "mock",
       play: "",
       userId: "",
@@ -137,7 +140,14 @@ const state = {
     const data = await fetch(BASE_URL + `rooms/${id}`);
     let json = await data.json();
     if (json.message) {
-      alert(json.message);
+      Swal.fire({
+        title:"Ocurrio un error",
+        backdrop:true,
+        icon:"error",
+        html: `
+        <b>${json.message}</b>
+        `
+      });
     } else {
       cs.gameState.privateId = json.rtdbRoomId;
       this.setState(cs);
@@ -146,19 +156,32 @@ const state = {
       }
     }
   },
-  async joinToRoom(cb?) {
+
+  async joinToRoom(cb?,call?) {
     const data = this.getState();
     const { gameState } = data;
     gameState.owner = false;
     data.gameReady = true;
-    fetch(BASE_URL + `rooms/${gameState.privateId}`, {
-      method: "Post",
-      headers: {
-        "content-type": "application/json",
-      },
-      body: JSON.stringify({ gameState }),
-    });
-    this.checkConnections(cb);
+
+    const numberUser = await fetch(`${BASE_URL}rooms/${gameState.privateId}/realtime`)
+    const users = await numberUser.json()
+    if(Object.entries(users).length === 2){
+      Swal.fire({
+        title:"Lo siento ya hay dos conectados"
+      })
+     call()
+    }else{
+      fetch(BASE_URL + `rooms/${gameState.privateId}`, {
+        method: "Post",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({ gameState }),
+      }).then(()=>{
+  
+        this.checkConnections(cb)
+      })
+    }
   },
   checkConnections(cb?) {
     const cs = this.getState();
@@ -166,13 +189,13 @@ const state = {
     ref.on("value", (snapshot) => {
       let data = snapshot.val();
       if (Object.keys(data).length === 2) {
+          if (cs.gameState.name === data.owner.name) {
+              cs.gameState.opponentName = data.guest.name;
+            }
+            if (cs.gameState.name === data.guest.name) {
+                cs.gameState.opponentName = data.owner.name;
+            }
         this.setGameReadyStatus(true, cb);
-        if (cs.gameState.name === data.owner.name) {
-          cs.gameState.opponentName = data.guest.name;
-        }
-        if (cs.gameState.name === data.guest.name) {
-          cs.gameState.opponentName = data.owner.name;
-        }
       }
     });
   },
@@ -181,9 +204,19 @@ const state = {
 
     if (online === true) {
       data.gameReady = online;
-      if (location.pathname !== "/connect") return;
+      if(data.gameState.owner){
+        if (location.pathname !== "/connect") return;
       if (location.pathname === "/connect") {
-        cb("/intructions");
+        cb()
+      }
+      if(data.gameState.owner === false){
+        if(location.pathname.includes("/intructions")){
+          cb()
+        }
+      }
+      
+      }else if(location.pathname === "/enterroom"){
+        cb()
       }
     }
     if (online === false) return (data.gameReady = online);
@@ -274,7 +307,6 @@ const state = {
 
   setWinner(resultOfOwner: string, resultOfGuest: string): void {
     const data = this.getState();
-    console.log("Estoy en el setWinner", data.scoreboard, data.gameState.owner);
     if (resultOfOwner == "empataste") {
       data.gameState.lastGameOwnerResult = resultOfOwner;
       data.gameState.lastGameGuestResult = resultOfGuest;
@@ -284,24 +316,14 @@ const state = {
       data.scoreboard.owner++;
       data.gameState.lastGameOwnerResult = resultOfOwner;
       data.gameState.lastGameGuestResult = resultOfGuest;
-      console.log(
-        "Estoy en el setWinner",
-        data.scoreboard,
-        data.gameState.owner
-      );
-
+      this.setHistoryFirestore()
       return this.saveData();
     }
     if (resultOfOwner == "perdiste") {
       data.scoreboard.guest++;
       data.gameState.lastGameOwnerResult = resultOfOwner;
       data.gameState.lastGameGuestResult = resultOfGuest;
-      console.log(
-        "Estoy en el setWinner",
-        data.scoreboard,
-        data.gameState.owner
-      );
-
+      this.setHistoryFirestore()
       return this.saveData();
     }
   },
@@ -313,6 +335,17 @@ const state = {
     cs.gameState.opponentPlay = "";
     this.setState(cs);
   },
+  setHistoryFirestore(){
+    const cs = this.getState()
+    fetch(`${BASE_URL}history/${cs.gameState.publicId}`,{
+      method: "post",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify(cs)
+
+    })
+  }
 };
 
 export { state };

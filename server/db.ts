@@ -6,7 +6,6 @@ import "firebase/compat/database"
 import * as dotenv from 'dotenv' // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
 dotenv.config()
 
-console.log()
 
 admin.initializeApp({
     credential: admin.credential.cert(key as any),

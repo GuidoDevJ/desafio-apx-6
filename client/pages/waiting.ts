@@ -8,16 +8,29 @@ import "../components/header/header"
 import { state } from "../state"
 
 export const Waiting=(params)=>{
-    // Crear un player que venga del state
-    let cs = state.getState()
-    console.log(cs.scoreboard)
+    const cs = state.getState()
+    const dataLocal = JSON.parse(localStorage.getItem("dataLocal") as any)
+    let nameOwner;
+    let nameGuest;
+
+    if(cs.gameState.owner){
+        nameOwner = cs.gameState.name
+        nameGuest = cs.gameState.opponentName
+    }
+    if(cs.gameState.owner === false){
+        nameOwner = cs.gameState.opponentName
+        nameGuest = cs.gameState.name
+
+    }
+
+    const {scoreboard} = dataLocal
 
     const div = document.createElement("div")
     const style = document.createElement("style")
     div.classList.add("contenedor")
     
     div.innerHTML = `
-    <custom-header></custom-header>
+    <custom-header player1="${nameOwner}" play2="${nameGuest}" roomId="${cs.gameState.publicId}" point1="${scoreboard.owner}" point2="${scoreboard.guest}"></custom-header>
     <div class="text">
         <p>Esperando a que ${cs.gameState.opponentName} presione ¡Jugar!...</p>
     </div>

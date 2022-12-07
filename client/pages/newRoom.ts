@@ -5,6 +5,7 @@ import "../components/papel-hand/hand";
 import "../components/piedra-hand/piedra";
 import "../components/tijeras-hand/tijeras";
 import { state } from "../state";
+import Swal from 'sweetalert2';
 
 export const NewRoom = (params) => {
   const div = document.createElement("div");
@@ -66,11 +67,18 @@ export const NewRoom = (params) => {
   btn.addEventListener("click", (e) => {
     const pattern = new RegExp("^[A-Z]+$", "i");
     e.preventDefault();
-    console.log(input.value);
     if (input.value === "") {
-      alert("Por favor ingrese algun nombre");
+      Swal.fire({
+        title:"Por favor ingrese algun nombre",
+        backdrop:true,
+        icon:"warning"
+      });
     } else if (!pattern.test(input.value)) {
-      alert("No se aceptan numeros como valores validos");
+      Swal.fire({
+        title:"No se aceptan numeros ni espacios en blancos",
+        backdrop:true,
+        icon:"error"
+      });
     } else {
       state.setNombreOwn(input.value);
       state.singIn(() => {

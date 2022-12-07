@@ -57,8 +57,8 @@ customElements.define("custom-header",
 
             <header class="head">
                 <div class="namesPoints">
-                    <p>${player1} :<span>0</span></p>
-                    <p>${play2} :<span></span>0</p>
+                    <p>${player1} :<span>${point1}</span></p>
+                    <p>${play2} :<span>${point2}</span></p>
                 </div>
                 <div class="numRoom">
                     <p>Sala</p>

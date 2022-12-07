@@ -107,6 +107,16 @@ app.post("/rooms/:rtdbId", (req, res) => {
       res.json("Salio todo ok");
     });
 });
+app.get("/rooms/:rtdbId/realtime", (req, res) => {
+  const { rtdbId } = req.params;
+  rtdb
+    .ref("/rooms/" + rtdbId)
+    .on("value",snapShot=>{
+      const data = snapShot.val()
+      res.json(data)
+    })
+  
+});
 app.get("/rooms/:roomId", (req, res) => {
   const chatRoomId = req.params.roomId;
   const chatRoomDoc = roomsCollection.doc(`${chatRoomId.toString()}`);
@@ -126,14 +136,6 @@ app.get("/rooms/:roomId", (req, res) => {
 app.post("/rooms/:id/play", (req, res) => {
   const { gameState } = req.body;
 
-  // //checkeo si existe el usuario && la sala
-  // if (userSnapshot.exists === false)
-  //   return res.status(401).json({ message: "Access denied, log in required" });
-
-  // if (userSnapshot.exists && roomSnapshot.exists === false)
-  //   return res.status(404).json({ message: "Room not found" });
-
-  // if (userSnapshot.exists && roomSnapshot.exists) {
   const roomRef = rtdb.ref(`rooms/${gameState.privateId}`);
 
   //updateo la data en la rtdb
@@ -148,25 +150,31 @@ app.post("/rooms/:id/play", (req, res) => {
     });
     return res.json({ success: true });
   }
-  // }
 });
 
-// app.get("/rooms/:roomId",(req,res)=>{
-//     const {userId} = req.query
-//     const {roomId} = req.params
-//     userCollection.doc(userId.toString()).get().then(snap=>{
-//         if(snap.exists){
-//             roomsCollection.doc(roomId).get().then(snap=>{
-//                 const data = snap.data()
-//                 res.json(data)
-//             })
-//         }else{
-//             res.status(402).json({
-//                 message:"El usuario no existe"
-//             })
-//         }
-//     })
-// })
+app.get("/history/:id",(req,res)=>{
+    const id = req.params.id
+    const documentRefe = roomsCollection.doc(id.toString())
+    
+    documentRefe.get().then((documentSnapshot)=>{
+      if(documentSnapshot.exists){
+        res.status(200).json(
+          documentSnapshot.data()
+        )
+      }else{
+        res.status(400).json({message:"Lo siento, pruebe con otra id"})
+      }
+    })
+})
+app.post("/history/:id",(req,res)=>{
+    const id = req.params.id
+    const{scoreboard} = req.body
+    const documentRefe = roomsCollection.doc(id.toString())
+    
+    documentRefe.set({scoreboard}).then((resl)=>{
+      res.status(200).json(resl.writeTime)
+    })
+})
 
 app.get("*", (req, res) => {
   res.sendFile(__dirname + "/public/index.html");
