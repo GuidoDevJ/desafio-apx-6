@@ -21,7 +21,7 @@ export const Play = (parametro) => {
       setTimeout(() => {
         clearInterval(intervalo);
       localStorage.clear()
-      parametro.goTo("/home");
+      parametro.goTo("/");
       location.reload()
       }, 1500);
       

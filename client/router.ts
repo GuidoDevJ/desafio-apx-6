@@ -9,7 +9,7 @@ import { EnterRoom } from './pages/enterRoom';
 import { Connect } from './pages/connect';
 import { Waiting } from './pages/waiting';
 import { Faild } from './pages/error';
-const BASE_PATH = "/desafio-m5";
+const BASE_PATH = "/apx-desafio-md-6.onrender.com";
 
 
 const routes =[
@@ -70,20 +70,16 @@ const routes =[
     }
 ]
 
-function isGithubPages() {
-  return location.host.includes("github.io");
-}
 
 export function initRouter(container: Element) {
   function goTo(path) {
-    const completePath = isGithubPages() ? BASE_PATH + path : path;
-    history.pushState({}, "", completePath);
-    handleRoute(completePath);
+
+    history.pushState({}, "", path)
+        handleRoute(path)
   }
   function handleRoute(route) {
-    const newRoute = isGithubPages() ? route.replace(BASE_PATH, "") : route;
     for(let r of routes){
-        if(r.path.test(newRoute)){
+        if(r.path.test(route)){
             let el = r.component({goTo})
             if(container?.firstChild){
                 container.firstChild.remove()
@@ -92,9 +88,8 @@ export function initRouter(container: Element) {
         }
     }
   }
-  if (location.host.includes("github.io")) {
-    goTo("/home");
-} else if (location.pathname == "/") {
+ 
+if (location.pathname == "/") {
     goTo("/home");
 } else {
     handleRoute(location.pathname)
