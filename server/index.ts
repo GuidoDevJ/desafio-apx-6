@@ -111,7 +111,7 @@ app.get("/rooms/:rtdbId/realtime", (req, res) => {
   const { rtdbId } = req.params;
   rtdb
     .ref("/rooms/" + rtdbId)
-    .on("value",snapShot=>{
+    .once("value",snapShot=>{
       const data = snapShot.val()
       res.json(data)
     })
@@ -171,7 +171,7 @@ app.post("/history/:id",(req,res)=>{
     const{scoreboard} = req.body
     const documentRefe = roomsCollection.doc(id.toString())
     
-    documentRefe.set({scoreboard}).then((resl)=>{
+    documentRefe.update({scoreboard}).then((resl)=>{
       res.status(200).json(resl.writeTime)
     })
 })

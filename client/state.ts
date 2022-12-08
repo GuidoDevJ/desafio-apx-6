@@ -165,23 +165,24 @@ const state = {
 
     const numberUser = await fetch(`${BASE_URL}rooms/${gameState.privateId}/realtime`)
     const users = await numberUser.json()
-    if(Object.entries(users).length === 2){
-      Swal.fire({
-        title:"Lo siento ya hay dos conectados"
-      })
-     call()
+    if(Object.values(users).length === 2){
+      Swal.fire("Cuidado esta lleno")
+      return call()
+      
     }else{
       fetch(BASE_URL + `rooms/${gameState.privateId}`, {
-        method: "Post",
+        method: "post",
         headers: {
-          "content-type": "application/json",
+          "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
         },
         body: JSON.stringify({ gameState }),
       }).then(()=>{
   
         this.checkConnections(cb)
       })
-    }
+      
+    } 
   },
   checkConnections(cb?) {
     const cs = this.getState();

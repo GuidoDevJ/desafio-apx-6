@@ -79,7 +79,9 @@ export const EnterRoom = (params) => {
         state.singIn(() => {
           state.joinToRoom(() => {
             params.goTo("/intructions");
-          },params.goTo("/error"));
+          },()=>{
+            params.goTo("/error");
+          });
         });
       });
     }
